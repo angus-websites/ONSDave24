@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\TimeRecordRepositoryInterface;
+use App\Repositories\TimeRecordRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bind the TimeRecordRepositoryInterface to the TimeRecordRepository
+        $this->app->bind(TimeRecordRepositoryInterface::class, TimeRecordRepository::class);
     }
 
     /**
