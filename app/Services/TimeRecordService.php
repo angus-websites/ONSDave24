@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\TimeRecordRepositoryInterface;
+use App\Enums\TimeRecordType;
 use Carbon\Carbon;
 
 /**
@@ -37,7 +38,14 @@ class TimeRecordService
      */
     public function clockIn(int $userId)
     {
-        // Pass
+        // Use the timeRecordRepository to clock in the user
+        $this->timeRecordRepository->createTimeRecord(
+            [
+                'user_id' => $userId,
+                'recorded_at' => now(),
+                'type' => TimeRecordType::CLOCK_IN,
+            ]
+        );
     }
 
     /**

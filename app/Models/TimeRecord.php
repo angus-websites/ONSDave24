@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TimeRecord extends Model
 {
     protected $fillable = [
-        'employee_id', 'recorded_at', 'type', 'notes',
+        'user_id', 'recorded_at', 'type', 'notes',
     ];
 
     protected $casts = [
