@@ -36,7 +36,7 @@ class TimeRecordService
      * @param int $userId
      * @return void
      */
-    public function clockIn(int $userId)
+    public function clockIn(int $userId): void
     {
         // Use the timeRecordRepository to clock in the user
         $this->timeRecordRepository->createTimeRecord(
@@ -53,9 +53,16 @@ class TimeRecordService
      * @param int $userId
      * @return void
      */
-    public function clockOut(int $userId)
+    public function clockOut(int $userId): void
     {
-        // Pass
+        // Use the timeRecordRepository to clock out the user
+        $this->timeRecordRepository->createTimeRecord(
+            [
+                'user_id' => $userId,
+                'recorded_at' => now(),
+                'type' => TimeRecordType::CLOCK_OUT,
+            ]
+        );
     }
 
     /**
