@@ -71,7 +71,7 @@ class TimeRecordService
      * @param Carbon $clockOutTime
      * @return bool
      */
-    protected function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
+    public function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
     {
         return $clockInTime->diffInSeconds($clockOutTime) < 10;
     }

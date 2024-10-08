@@ -17,6 +17,7 @@ class TimeRecordServiceTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Test the clockIn method
      * @throws Exception
      */
     public function testClockIn()
@@ -53,6 +54,10 @@ class TimeRecordServiceTest extends TestCase
 
     }
 
+    /**
+     * Test the clockOut method
+     * @throws Exception
+     */
     public function testClockOut()
     {
         // Create a mock TimeRecordRepositoryInterface
@@ -83,5 +88,50 @@ class TimeRecordServiceTest extends TestCase
 
         // Reset the time after the test
         Carbon::setTestNow();
+    }
+
+    /**
+     * Test the isSessionDurationTooShort method
+     * @throws Exception
+     */
+    public function testIsSessionDurationTooShortWithLongDuration()
+    {
+        // Create a mock TimeRecordRepositoryInterface
+        $timeRecordRepository = $this->createMock(TimeRecordRepositoryInterface::class);
+
+        // Create a TimeRecordService instance
+        $timeRecordService = new TimeRecordService($timeRecordRepository);
+
+        // Call the isSessionDurationTooShort method with a duration of 1 hour
+        $clockInTime = Carbon::parse('2024-01-01 10:00:00');
+        $clockOutTime = Carbon::parse('2024-01-01 11:00:00');
+
+        $result = $timeRecordService->isSessionDurationTooShort($clockInTime, $clockOutTime);
+
+        // Assert that the result is false
+        $this->assertFalse($result);
+
+    }
+
+    /**
+     * Test the isSessionDurationTooShort method
+     * @throws Exception
+     */
+    public function testIsSessionDurationTooShortWithShortDuration()
+    {
+        // Create a mock TimeRecordRepositoryInterface
+        $timeRecordRepository = $this->createMock(TimeRecordRepositoryInterface::class);
+
+        // Create a TimeRecordService instance
+        $timeRecordService = new TimeRecordService($timeRecordRepository);
+
+        // Call the isSessionDurationTooShort method with a duration of 5 seconds
+        $clockInTime = Carbon::parse('2024-01-01 10:00:00');
+        $clockOutTime = Carbon::parse('2024-01-01 10:00:05');
+
+        $result = $timeRecordService->isSessionDurationTooShort($clockInTime, $clockOutTime);
+
+        // Assert that the result is true
+        $this->assertTrue($result);
     }
 }
