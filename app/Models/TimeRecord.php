@@ -2,11 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\TimeRecordType;
 use Illuminate\Database\Eloquent\Model;
 
 class TimeRecord extends Model
 {
-    /** @use HasFactory<\Database\Factories\TimeRecordFactory> */
-    use HasFactory;
+    protected $fillable = [
+        'employee_id', 'recorded_at', 'type', 'notes',
+    ];
+
+    protected $casts = [
+        'type' => TimeRecordType::class,
+        'recorded_at' => 'datetime',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
