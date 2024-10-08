@@ -19,14 +19,15 @@ class TimeRecordService
     }
 
     /**
-     * Handle the clock in/out operation for the given user.
+     * Handle the clock in/out operation for the given user
      * @param int $userId
      * @param string $userLocation
+     * @param Carbon|null $userProvidedTime
      * @return void
      */
-    public function handleClock(int $userId, string $userLocation)
+    public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null)
     {
-
+        // Pass
     }
 
     /**
