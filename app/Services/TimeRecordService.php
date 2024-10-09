@@ -30,7 +30,7 @@ class TimeRecordService
      * @return void
      * @throws Exception
      */
-    public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null)
+    public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null): void
     {
         // If userProvidedTime is not provided, use the current time
         if ($userProvidedTime === null) {
@@ -80,7 +80,7 @@ class TimeRecordService
      * @param Carbon $providedTime
      * @return void
      */
-    private function clockOut(int $userId, $providedTime): void
+    private function clockOut(int $userId, Carbon $providedTime): void
     {
         // Use the timeRecordRepository to clock out the user
         $this->timeRecordRepository->createTimeRecord(
