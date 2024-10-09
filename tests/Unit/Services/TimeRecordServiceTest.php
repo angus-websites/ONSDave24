@@ -127,6 +127,21 @@ class TimeRecordServiceTest extends TestCase
     }
 
     /**
+     * @param array $data
+     * @param int $userId
+     * @param Carbon $expectedTime
+     * @param TimeRecordType $expectedType
+     * @return void
+     */
+    private function assertTimeRecord(array $data, int $userId, Carbon $expectedTime, TimeRecordType $expectedType): void
+    {
+        $this->assertEquals($userId, $data['user_id']);
+        $this->assertInstanceOf(Carbon::class, $data['recorded_at']);
+        $this->assertTrue($data['recorded_at']->eq($expectedTime));
+        $this->assertEquals($expectedType, $data['type']);
+    }
+
+    /**
      * Test a new user clocking in, then clocking out in the UK without providing a time
      * @throws \Exception
      * @throws Exception
@@ -146,31 +161,10 @@ class TimeRecordServiceTest extends TestCase
             ->method('createTimeRecord')
             ->willReturnCallback(function ($data) use ($start, $end, $matcher) {
 
-                // Define assertion callbacks for each invocation
-                $assertionCallback = function (callable $callback) use ($data) {
-                    try {
-                        $callback($data); // Call the assertion callback
-                    } catch (\Throwable $e) {
-                        // Log or handle the error as needed
-                        throw new \Exception("Assertion failed: " . $e->getMessage());
-                    }
-                };
-
                 // Match parameters based on the invocation count
                 match ($matcher->numberOfInvocations()) {
-                    1 => $assertionCallback(function ($data) use ($start) {
-                        $this->assertEquals($this->user->id, $data['user_id']);
-                        $this->assertInstanceOf(Carbon::class, $data['recorded_at']);
-                        $this->assertTrue($data['recorded_at']->eq($start));
-                        $this->assertEquals(TimeRecordType::CLOCK_IN, $data['type']);
-                    }),
-
-                    2 => $assertionCallback(function ($data) use ($end) {
-                        $this->assertEquals($this->user->id, $data['user_id']);
-                        $this->assertInstanceOf(Carbon::class, $data['recorded_at']);
-                        $this->assertTrue($data['recorded_at']->eq($end));
-                        $this->assertEquals(TimeRecordType::CLOCK_IN, $data['type']);
-                    }),
+                    1 => $this->assertTimeRecord($data, $this->user->id, $start, TimeRecordType::CLOCK_IN),
+                    2 => $this->assertTimeRecord($data, $this->user->id, $end, TimeRecordType::CLOCK_OUT),
                 };
             });
 
