@@ -28,28 +28,47 @@ class TimeRecordService
      * @param string $userLocation
      * @param Carbon|null $userProvidedTime
      * @return void
+     * @throws Exception
      */
     public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null)
     {
-        // Pass
+        // If userProvidedTime is not provided, use the current time
+        if ($userProvidedTime === null) {
+            $userProvidedTime = Carbon::now();
+        }
+
+        // If the userProvidedTime is passed, convert it to UTC
+        if ($userProvidedTime !== null) {
+            $userProvidedTime = $this->convertToUtc($userProvidedTime, $userLocation);
+        }
+
+        // Call clockIn or clockOut based on the user's last time record
+        $lastTimeRecord = $this->timeRecordRepository->getLastRecordForUser($userId);
+
+        // If the last time record is clock out or null, clock in the user
+        if ($lastTimeRecord === null || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {
+            $this->clockIn($userId, $userProvidedTime);
+        } else {
+            // If the last time record is clock in, clock out the user
+            $this->clockOut($userId, $userProvidedTime);
+        }
+
     }
 
     /**
      * Clock in the user.
      * @param int $userId
-     * @param Carbon|null $providedTime
+     * @param Carbon $providedTime
      * @return void
      */
-    public function clockIn(int $userId, ?Carbon $providedTime = null): void
+    private function clockIn(int $userId, Carbon $providedTime): void
     {
-        // If the provided time is null, use the current time
-        $recordedAt = $providedTime ?? now();
 
         // Use the timeRecordRepository to clock in the user
         $this->timeRecordRepository->createTimeRecord(
             [
                 'user_id' => $userId,
-                'recorded_at' => $recordedAt,
+                'recorded_at' => $providedTime,
                 'type' => TimeRecordType::CLOCK_IN,
             ]
         );
@@ -58,19 +77,16 @@ class TimeRecordService
     /**
      * Clock out the user.
      * @param int $userId
-     * @param Carbon|null $providedTime
+     * @param Carbon $providedTime
      * @return void
      */
-    public function clockOut(int $userId, ?Carbon $providedTime = null): void
+    private function clockOut(int $userId, $providedTime): void
     {
-
-        $recordedAt = $providedTime ?? now();
-
         // Use the timeRecordRepository to clock out the user
         $this->timeRecordRepository->createTimeRecord(
             [
                 'user_id' => $userId,
-                'recorded_at' => $recordedAt,
+                'recorded_at' => $providedTime,
                 'type' => TimeRecordType::CLOCK_OUT,
             ]
         );
@@ -82,7 +98,7 @@ class TimeRecordService
      * @param Carbon $clockOutTime
      * @return bool
      */
-    public function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
+    private function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
     {
         return $clockInTime->diffInSeconds($clockOutTime) < 10;
     }
@@ -95,7 +111,7 @@ class TimeRecordService
      * @return Carbon
      * @throws Exception
      */
-    public function convertToUtc(DateTime $clockTime, String $userTimeZone): Carbon
+    private function convertToUtc(DateTime $clockTime, String $userTimeZone): Carbon
     {
         // Validate the provided timezone
         if (!in_array($userTimeZone, timezone_identifiers_list())) {
