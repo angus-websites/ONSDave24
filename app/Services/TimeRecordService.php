@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Contracts\TimeRecordRepositoryInterface;
 use App\Enums\TimeRecordType;
 use Carbon\Carbon;
+use DateTime;
+use Exception;
 
 /**
  * The TimeRecordService class is responsible for handling the business logic
@@ -77,13 +79,25 @@ class TimeRecordService
     }
 
     /**
-     * Convert the given time to UTC timezone.
-     * @param string $location
+     * Convert the provided clock time to UTC based on the user's time zone.
+     *
+     * @param DateTime $clockTime
+     * @param string $userTimeZone
      * @return Carbon
+     * @throws Exception
      */
-    protected function convertToUTC(string $location): Carbon
+    public function convertToUtc(DateTime $clockTime, String $userTimeZone): Carbon
     {
-        $localTime = Carbon::now($location);
-        return $localTime->setTimezone('UTC');
+        // Validate the provided timezone
+        if (!in_array($userTimeZone, timezone_identifiers_list())) {
+            $userTimeZone = 'Europe/London';
+        }
+
+        // Convert the time to UTC
+        try {
+            return Carbon::parse($clockTime, $userTimeZone)->setTimezone('UTC');
+        } catch (Exception $e) {
+            throw new Exception("Error converting time to UTC: " . $e->getMessage());
+        }
     }
 }

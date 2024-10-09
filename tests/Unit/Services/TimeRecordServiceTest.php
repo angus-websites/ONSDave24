@@ -123,4 +123,61 @@ class TimeRecordServiceTest extends TestCase
         // Assert that the result is true
         $this->assertTrue($result);
     }
+
+    /**
+     * Test converting UK time to UTC
+     * @throws \Exception
+     */
+    public function testConvertToUtcWithUkTime()
+    {
+        // Create a TimeRecordService instance
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Call the convertToUtc method with a UK time
+        $ukTime = Carbon::parse('2024-01-01 10:00:00', 'Europe/London');
+        $expectedUtcTime = Carbon::parse('2024-01-01 10:00:00', 'UTC');
+
+        $utcTime = $timeRecordService->convertToUtc($ukTime, 'Europe/London');
+
+        // Assert that the result is the same as the UK time
+        $this->assertEquals($expectedUtcTime, $utcTime);
+    }
+
+    /**
+     * Test converting UK time in summer to UTC
+     * @throws \Exception
+     */
+    public function testConvertToUtcWithUkTimeInSummer()
+    {
+        // Create a TimeRecordService instance
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Call the convertToUtc method with a UK time in summer
+        $ukTime = Carbon::parse('2024-07-01 10:00:00', 'Europe/London');
+        $expectedUtcTime = Carbon::parse('2024-07-01 09:00:00', 'UTC');
+
+        $utcTime = $timeRecordService->convertToUtc($ukTime, 'Europe/London');
+
+        // Assert that the result is the same as the UK time
+        $this->assertEquals($expectedUtcTime, $utcTime);
+    }
+
+    /**
+     * Test converting french time to UTC
+     * @throws \Exception
+     */
+    public function testConvertToUtcWithFrenchTime()
+    {
+        // Create a TimeRecordService instance
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Call the convertToUtc method with a French time
+        $frenchTime = Carbon::parse('2024-01-01 10:00:00', 'Europe/Paris');
+        $expectedUtcTime = Carbon::parse('2024-01-01 09:00:00', 'UTC');
+
+        $utcTime = $timeRecordService->convertToUtc($frenchTime, 'Europe/Paris');
+
+        // Assert that the result is the same as the UK time
+        $this->assertEquals($expectedUtcTime, $utcTime);
+    }
 }
