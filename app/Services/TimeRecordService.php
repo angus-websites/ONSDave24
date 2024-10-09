@@ -22,7 +22,8 @@ class TimeRecordService
     }
 
     /**
-     * Handle the clock in/out operation for the given user
+     * Handle the clock in/out operation for the given user,
+     * the userProvidedTime is optional and can be used to override the current time
      * @param int $userId
      * @param string $userLocation
      * @param Carbon|null $userProvidedTime
@@ -36,15 +37,19 @@ class TimeRecordService
     /**
      * Clock in the user.
      * @param int $userId
+     * @param Carbon|null $providedTime
      * @return void
      */
-    public function clockIn(int $userId): void
+    public function clockIn(int $userId, ?Carbon $providedTime = null): void
     {
+        // If the provided time is null, use the current time
+        $recordedAt = $providedTime ?? now();
+
         // Use the timeRecordRepository to clock in the user
         $this->timeRecordRepository->createTimeRecord(
             [
                 'user_id' => $userId,
-                'recorded_at' => now(),
+                'recorded_at' => $recordedAt,
                 'type' => TimeRecordType::CLOCK_IN,
             ]
         );
@@ -53,15 +58,19 @@ class TimeRecordService
     /**
      * Clock out the user.
      * @param int $userId
+     * @param Carbon|null $providedTime
      * @return void
      */
-    public function clockOut(int $userId): void
+    public function clockOut(int $userId, ?Carbon $providedTime = null): void
     {
+
+        $recordedAt = $providedTime ?? now();
+
         // Use the timeRecordRepository to clock out the user
         $this->timeRecordRepository->createTimeRecord(
             [
                 'user_id' => $userId,
-                'recorded_at' => now(),
+                'recorded_at' => $recordedAt,
                 'type' => TimeRecordType::CLOCK_OUT,
             ]
         );

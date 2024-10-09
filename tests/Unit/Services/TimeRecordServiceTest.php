@@ -30,8 +30,6 @@ class TimeRecordServiceTest extends TestCase
         // Set up common objects for all tests
         $this->timeRecordRepository = $this->createMock(TimeRecordRepositoryInterface::class);
         $this->user = UserFactory::new()->create();
-        $this->testNow = Carbon::parse('2024-01-01 10:00:00');
-        Carbon::setTestNow($this->testNow);
     }
 
     protected function tearDown(): void
@@ -46,15 +44,18 @@ class TimeRecordServiceTest extends TestCase
      * Test the clockIn method
      * @throws Exception
      */
-    public function testClockIn()
+    public function testClockInNow()
     {
+        $now = Carbon::parse('2024-01-01 10:00:00');
+        Carbon::setTestNow($now);
+
         // Expect the createTimeRecord method to be called once with the correct data
         $this->timeRecordRepository->expects($this->once())
             ->method('createTimeRecord')
-            ->with($this->callback(function ($data) {
+            ->with($this->callback(function ($data) use ($now) {
                 return $data['user_id'] === $this->user->id
                     && $data['recorded_at'] instanceof Carbon
-                    && $data['recorded_at'] == $this->testNow
+                    && $data['recorded_at'] == $now
                     && $data['type'] === TimeRecordType::CLOCK_IN;
             }));
 
@@ -66,15 +67,43 @@ class TimeRecordServiceTest extends TestCase
     }
 
     /**
-     * Test the clockOut method
-     * @throws Exception
+     * Test clock in at specific time
      */
-    public function testClockOut()
+    public function testClockInAtSpecificTime()
     {
+
+        $customTime = Carbon::parse('2024-08-09 9:00:00');
+
         // Expect the createTimeRecord method to be called once with the correct data
         $this->timeRecordRepository->expects($this->once())
             ->method('createTimeRecord')
-            ->with($this->callback(function ($data) {
+            ->with($this->callback(function ($data) use ($customTime) {
+                return $data['user_id'] === $this->user->id
+                    && $data['recorded_at'] instanceof Carbon
+                    && $data['recorded_at'] == $customTime
+                    && $data['type'] === TimeRecordType::CLOCK_IN;
+            }));
+
+        // Create a new instance of TimeRecordService
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Call the clockIn method with the user id and a specific time
+        $timeRecordService->clockIn($this->user->id, $customTime);
+    }
+
+    /**
+     * Test the clockOut method
+     * @throws Exception
+     */
+    public function testClockOutNow()
+    {
+        $now = Carbon::parse('2024-01-01 10:00:00');
+        Carbon::setTestNow($now);
+
+        // Expect the createTimeRecord method to be called once with the correct data
+        $this->timeRecordRepository->expects($this->once())
+            ->method('createTimeRecord')
+            ->with($this->callback(function ($data) use ($now) {
                 return $data['user_id'] === $this->user->id
                     && $data['recorded_at'] instanceof Carbon
                     && $data['recorded_at'] == $this->testNow
@@ -86,6 +115,30 @@ class TimeRecordServiceTest extends TestCase
 
         // Call the clockOut method with the user id
         $timeRecordService->clockOut($this->user->id);
+    }
+
+    /**
+     * Test clock out at specific time
+     */
+    public function testClockOutAtSpecificTime()
+    {
+        $customTime = Carbon::parse('2024-08-09 9:00:00');
+
+        // Expect the createTimeRecord method to be called once with the correct data
+        $this->timeRecordRepository->expects($this->once())
+            ->method('createTimeRecord')
+            ->with($this->callback(function ($data) use ($customTime) {
+                return $data['user_id'] === $this->user->id
+                    && $data['recorded_at'] instanceof Carbon
+                    && $data['recorded_at'] == $customTime
+                    && $data['type'] === TimeRecordType::CLOCK_OUT;
+            }));
+
+        // Create a new instance of TimeRecordService
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Call the clockOut method with the user id and a specific time
+        $timeRecordService->clockOut($this->user->id, $customTime);
     }
 
     /**
@@ -180,4 +233,9 @@ class TimeRecordServiceTest extends TestCase
         // Assert that the result is the same as the UK time
         $this->assertEquals($expectedUtcTime, $utcTime);
     }
+
+    /**
+     * Test the handleClock method
+     */
+
 }
