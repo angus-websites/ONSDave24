@@ -22,7 +22,7 @@ return new class extends Migration
             $table->enum('type', LeaveRecordType::getValues())->default(LeaveRecordType::ANNUAL->value);
             $table->dateTime('start');
             $table->dateTime('end');
-            $table->text('reason')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
