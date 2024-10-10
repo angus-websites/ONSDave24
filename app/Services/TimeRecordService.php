@@ -44,6 +44,11 @@ class TimeRecordService
 
         // Call clockIn or clockOut based on the user's last time record
         $lastTimeRecord = $this->timeRecordRepository->getLastRecordForUser($userId);
+        
+        // If userProvidedTime is provided, it must be after the last time record
+        if ($lastTimeRecord !== null && $userProvidedTime !== null && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
+            throw new Exception("User provided time must be after the last time record");
+        }
 
         // If the last time record is clock out or null, clock in the user
         if ($lastTimeRecord === null || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {

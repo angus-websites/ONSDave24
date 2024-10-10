@@ -9,8 +9,8 @@ use App\Models\User;
 use App\Services\TimeRecordService;
 use Carbon\Carbon;
 use Database\Factories\UserFactory;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
 class TimeRecordServiceTest extends TestCase
@@ -23,6 +23,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     protected function setUp(): void
     {
@@ -44,6 +45,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in for the first time in the UK without providing a time
+     * @throws Exception
      */
     public function testHandleClockUkNewUserFirstTimeNow(){
 
@@ -71,6 +73,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in for the first time in the UK providing a specific time
+     * @throws Exception
      */
     public function testHandleClockUkNewUserFirstTimeSpecificTime()
     {
@@ -98,7 +101,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in for the first time in the UK summer providing a specific time
-     * @throws \Exception
+     * @throws Exception
      */
     public function testHandleClockUkSummerTimeNewUserFirstTimeSpecificTime()
     {
@@ -143,7 +146,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in, then clocking out in the UK without providing a time
-     * @throws \Exception|Exception
+     * @throws Exception|Exception|\PHPUnit\Framework\MockObject\Exception
      *
      */
     public function testHandleClockUkNewUserTwiceNow()
@@ -194,7 +197,8 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in automatically clocking out manually with a time that is before the clock in time
-     * @throws \Exception|Exception
+     * throws an exception
+     * @throws Exception|Exception
      */
     public function testHandleClockUkNewUserClockOutBeforeClockIn()
     {
@@ -226,17 +230,22 @@ class TimeRecordServiceTest extends TestCase
 
         // Create a mock TimeRecord object with the type of TimeRecordType::CLOCK_IN
         // This will be used to mock the last record for the user
-        $clock__in_mock = $this->createMock(TimeRecord::class);
-        $clock__in_mock->type = TimeRecordType::CLOCK_IN;
+        $clock_in_mock = TimeRecord::make([
+            'recorded_at' => $start,
+            'type' => TimeRecordType::CLOCK_IN,
+        ]);
+
 
         // Mock the getLastRecordForUser method to return the mock TimeRecord object
-        $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock__in_mock);
+        $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock_in_mock);
+
+        // Assert an exception is thrown
+        $this->expectException(Exception::class);
 
         // Call the handleClock method to clock out but manually provide a time that is before the clock in time
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
 
-        // Assert an exception is thrown
-        $this->expectException(Exception::class);
+
     }
 
 
