@@ -38,4 +38,14 @@ class TimeRecordRepositoryTest extends TestCase
         $this->assertInstanceOf(TimeRecord::class, $timeRecord);
     }
 
+    public function testRemoveLastRecordForUser()
+    {
+        $user = User::factory()->create();
+        $timeRecord = TimeRecord::factory()->create(['user_id' => $user->id]);
+
+        $this->timeRecordRepository->removeLastRecordForUser($user->id);
+
+        $this->assertDatabaseMissing('time_records', ['id' => $timeRecord->id]);
+    }
+
 }
