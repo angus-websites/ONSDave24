@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Contracts\LeaveRecordRepositoryInterface;
-use App\Enums\LeaveRecordType;
 use Carbon\Carbon;
 use Exception;
 
@@ -21,7 +20,7 @@ class LeaveRecordService
      *
      * @throws Exception
      */
-    public function addLeaveRecord(int $userId, LeaveRecordType $leaveType, Carbon $startDate, Carbon $endDate): void
+    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate): void
     {
 
         // Validate that end date is after start date
@@ -32,7 +31,7 @@ class LeaveRecordService
         $this->leaveRecordRepository->createLeaveRecord(
             [
                 'user_id' => $userId,
-                'leave_type' => $leaveType,
+                'leave_type_id' => $leaveTypeId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ]
