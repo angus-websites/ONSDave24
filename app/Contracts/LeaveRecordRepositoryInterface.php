@@ -11,5 +11,7 @@ interface LeaveRecordRepositoryInterface
 {
     public function createLeaveRecord(array $data);
 
+    public function deleteLeaveRecord(int $leaveRecordId);
+
     public function getAllLeaveRecordsForUser(int $userId) : iterable;
 }

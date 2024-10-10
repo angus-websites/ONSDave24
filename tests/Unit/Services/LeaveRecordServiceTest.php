@@ -83,5 +83,24 @@ class LeaveRecordServiceTest extends TestCase
         $leaveRecordService->addLeaveRecord($this->user->id, $leaveType, $startDate, $endDate);
     }
 
+    /**
+     * Test deleting a leave record
+     * @return void
+     */
+    public function testDeleteLeaveRecord()
+    {
+        // Set up the data for the test
+        $leaveRecordId = 1;
+
+        // Mock the repository method
+        $this->leaveRecordRepository->expects($this->once())
+            ->method('deleteLeaveRecord')
+            ->with($leaveRecordId);
+
+        // Call the service method
+        $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
+        $leaveRecordService->deleteLeaveRecord($leaveRecordId);
+    }
+
 
 }

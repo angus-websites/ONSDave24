@@ -21,6 +21,10 @@ class LeaveRecordRepositoryTest extends TestCase
         $this->leaveRecordRepository = new LeaveRecordRepository();
     }
 
+    /**
+     * Test creating a new leave record
+     * @return void
+     */
     public function testCreateLeaveRecord()
     {
         $user = User::factory()->create();
@@ -40,6 +44,33 @@ class LeaveRecordRepositoryTest extends TestCase
         $this->assertEquals($data['leave_type'], $leaveRecord->leave_type);
     }
 
+    /**
+     * Test deleting a leave record
+     * @return void
+     */
+    public function testDeleteLeaveRecord()
+    {
+        $user = User::factory()->create();
+        $data = [
+            'user_id' => $user->id,
+            'start_date' => '2021-01-01 00:00:00',
+            'end_date' => '2021-01-02 00:00:00',
+            'leave_type' => LeaveRecordType::ANNUAL,
+        ];
+
+        $leaveRecord = $this->leaveRecordRepository->createLeaveRecord($data);
+
+        $this->assertDatabaseHas('leave_records', $data);
+
+        $this->leaveRecordRepository->deleteLeaveRecord($leaveRecord->id);
+
+        $this->assertDatabaseMissing('leave_records', $data);
+    }
+
+    /**
+     * Test getting all leave records for a user
+     * @return void
+     */
     public function testGetAllLeaveRecordsForUser()
     {
         $user = User::factory()->create();

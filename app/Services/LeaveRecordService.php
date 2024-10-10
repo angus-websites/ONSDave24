@@ -41,4 +41,14 @@ class LeaveRecordService
             ]
         );
     }
+
+    /**
+     * Delete a leave record by its ID
+     * @param int $leaveRecordId
+     * @return void
+     */
+    public function deleteLeaveRecord(int $leaveRecordId): void
+    {
+        $this->leaveRecordRepository->deleteLeaveRecord($leaveRecordId);
+    }
 }
