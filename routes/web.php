@@ -17,5 +17,5 @@ Route::middleware([
     })->name('dashboard');
 
     // Clock route to TimeRecordController
-    Route::get('/clock', TimeRecordController::class)->name('handleClock');
+    Route::get('/clock', [TimeRecordController::class, 'handleClock'])->name('clock');
 });

@@ -32,7 +32,7 @@ class TimeRecordController extends Controller
         $time = $time ? new Carbon($time) : null;
 
         // Get the user location
-        $location = $request->input('location', null);
+        $location = $request->input('location', 'Europe/London');
 
         // Use the service to handle the clock operation
         $this->timeRecordService->handleClock($userId, $location, $time);
