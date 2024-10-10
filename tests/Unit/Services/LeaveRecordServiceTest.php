@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Contracts\LeaveRecordRepositoryInterface;
-use App\Enums\LeaveRecordType;
+use App\Models\LeaveType;
 use App\Models\User;
 use App\Services\LeaveRecordService;
 use Carbon\Carbon;
@@ -17,6 +17,7 @@ class LeaveRecordServiceTest extends TestCase
     protected LeaveRecordRepositoryInterface $timeRecordRepository;
 
     protected User $user;
+    protected LeaveType $leaveType;
 
     /**
      * @throws MockObjectException
@@ -28,6 +29,7 @@ class LeaveRecordServiceTest extends TestCase
         // Set up common objects for all tests
         $this->leaveRecordRepository = $this->createMock(LeaveRecordRepositoryInterface::class);
         $this->user = UserFactory::new()->create();
+        $this->leaveType = LeaveType::factory()->create();
     }
 
     protected function tearDown(): void
@@ -48,7 +50,7 @@ class LeaveRecordServiceTest extends TestCase
     public function testAddLeaveRecord()
     {
         // Set up the data for the test
-        $leaveType = LeaveRecordType::ANNUAL;
+        $leaveTypeId = $this->leaveType->id;
         $startDate = Carbon::parse('2024-01-01');
         $endDate = Carbon::now()->addDays(2);
 
@@ -57,14 +59,14 @@ class LeaveRecordServiceTest extends TestCase
             ->method('createLeaveRecord')
             ->with([
                 'user_id' => $this->user->id,
-                'leave_type' => $leaveType,
+                'leave_type_id' => $leaveTypeId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ]);
 
         // Call the service method
         $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
-        $leaveRecordService->addLeaveRecord($this->user->id, $leaveType, $startDate, $endDate);
+        $leaveRecordService->addLeaveRecord($this->user->id, $leaveTypeId, $startDate, $endDate);
     }
 
     /**
@@ -75,7 +77,7 @@ class LeaveRecordServiceTest extends TestCase
     public function testAddLeaveRecordEndDateBeforeStartDateThrowsException()
     {
         // Set up the data for the test
-        $leaveType = LeaveRecordType::ANNUAL;
+        $leaveTypeId = $this->leaveType->id;
         $startDate = Carbon::parse('2024-01-01');
         $endDate = Carbon::parse('2024-01-01')->subDay();
 
@@ -84,7 +86,7 @@ class LeaveRecordServiceTest extends TestCase
 
         // 3. Expect an exception to be thrown
         $this->expectException(Exception::class);
-        $leaveRecordService->addLeaveRecord($this->user->id, $leaveType, $startDate, $endDate);
+        $leaveRecordService->addLeaveRecord($this->user->id, $leaveTypeId, $startDate, $endDate);
     }
 
     /**
