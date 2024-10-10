@@ -14,9 +14,10 @@ use Tests\TestCase;
 
 class TimeRecordServiceTest extends TestCase
 {
-
     protected TimeRecordRepositoryInterface $timeRecordRepository;
+
     protected User $user;
+
     protected Carbon $testNow;
 
     /**
@@ -40,12 +41,13 @@ class TimeRecordServiceTest extends TestCase
         Carbon::setTestNow();
     }
 
-
     /**
      * Test a new user clocking in for the first time in the UK without providing a time
+     *
      * @throws Exception
      */
-    public function testHandleClockUkNewUserFirstTimeNow(){
+    public function testHandleClockUkNewUserFirstTimeNow()
+    {
 
         // Mock the current time
         $now = Carbon::parse('2024-01-01 10:00:00');
@@ -71,6 +73,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in for the first time in the UK providing a specific time
+     *
      * @throws Exception
      */
     public function testHandleClockUkNewUserFirstTimeSpecificTime()
@@ -99,6 +102,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in for the first time in the UK summer providing a specific time
+     *
      * @throws Exception
      */
     public function testHandleClockUkSummerTimeNewUserFirstTimeSpecificTime()
@@ -108,7 +112,6 @@ class TimeRecordServiceTest extends TestCase
 
         // Create the UTC equivalent of the custom time
         $utcTime = Carbon::parse('2024-06-01 09:00:00');
-
 
         // Expect the createTimeRecord method to be called once with the correct data
         $this->timeRecordRepository->expects($this->once())
@@ -127,13 +130,6 @@ class TimeRecordServiceTest extends TestCase
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $customTime);
     }
 
-    /**
-     * @param array $data
-     * @param int $userId
-     * @param Carbon $expectedTime
-     * @param TimeRecordType $expectedType
-     * @return void
-     */
     private function assertTimeRecord(array $data, int $userId, Carbon $expectedTime, TimeRecordType $expectedType): void
     {
         $this->assertEquals($userId, $data['user_id']);
@@ -144,15 +140,14 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in, then clocking out in the UK without providing a time
-     * @throws Exception|Exception|\PHPUnit\Framework\MockObject\Exception
      *
+     * @throws Exception|Exception|\PHPUnit\Framework\MockObject\Exception
      */
     public function testHandleClockUkNewUserTwiceNow()
     {
         // Mock the current time for clock in (start of the day in the UK timezone)
         $start = Carbon::parse('2024-01-01 09:00:00', 'Europe/London');
         $end = Carbon::parse('2024-01-01 17:00:00', 'Europe/London');
-
 
         // Define the expected calls to the mock repository, this should be called twice
         // The first call should be for clock in and the second call should be for clock out
@@ -167,7 +162,6 @@ class TimeRecordServiceTest extends TestCase
                     2 => $this->assertTimeRecord($data, $this->user->id, $end, TimeRecordType::CLOCK_OUT),
                 };
             });
-
 
         // Create a new instance of TimeRecordService
         $timeRecordService = new TimeRecordService($this->timeRecordRepository);
@@ -198,6 +192,7 @@ class TimeRecordServiceTest extends TestCase
     /**
      * Test a new user clocking in automatically clocking out manually with a time that is before the clock in time
      * throws an exception
+     *
      * @throws Exception|Exception
      */
     public function testHandleClockUkNewUserClockOutBeforeClockIn()
@@ -227,14 +222,12 @@ class TimeRecordServiceTest extends TestCase
         // Call the handleClock method to clock in
         $timeRecordService->handleClock($this->user->id, 'Europe/London');
 
-
         // Create a mock TimeRecord object with the type of TimeRecordType::CLOCK_IN
         // This will be used to mock the last record for the user
         $clock_in_mock = TimeRecord::make([
             'recorded_at' => $start,
             'type' => TimeRecordType::CLOCK_IN,
         ]);
-
 
         // Mock the getLastRecordForUser method to return the mock TimeRecord object
         $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock_in_mock);
@@ -250,6 +243,7 @@ class TimeRecordServiceTest extends TestCase
     /**
      * Test that when a clock out is called within the minimum session duration, the last record is deleted and the
      * session is not created
+     *
      * @throws Exception
      */
     public function testHandleClockUkNewUserClockOutWithinMinimumSession()
@@ -296,6 +290,4 @@ class TimeRecordServiceTest extends TestCase
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
 
     }
-
-
 }

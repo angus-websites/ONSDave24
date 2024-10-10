@@ -13,9 +13,9 @@ interface TimeRecordRepositoryInterface
 {
     public function createTimeRecord(array $data);
 
-    public function getLastRecordForUser(int $userId) : ?TimeRecord;
+    public function getLastRecordForUser(int $userId): ?TimeRecord;
 
-    public function removeLastRecordForUser(int $userId) : void;
+    public function removeLastRecordForUser(int $userId): void;
 
-    public function getAllRecordsForUser(int $userId) : iterable;
+    public function getAllRecordsForUser(int $userId): iterable;
 }

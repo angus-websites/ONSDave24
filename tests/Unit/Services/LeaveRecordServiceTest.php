@@ -1,20 +1,21 @@
 <?php
 
 namespace Tests\Unit\Services;
+
 use App\Contracts\LeaveRecordRepositoryInterface;
 use App\Enums\LeaveRecordType;
 use App\Models\User;
 use App\Services\LeaveRecordService;
 use Carbon\Carbon;
 use Database\Factories\UserFactory;
-use PHPUnit\Framework\MockObject\Exception as MockObjectException;
 use Exception;
+use PHPUnit\Framework\MockObject\Exception as MockObjectException;
 use Tests\TestCase;
 
 class LeaveRecordServiceTest extends TestCase
 {
-
     protected LeaveRecordRepositoryInterface $timeRecordRepository;
+
     protected User $user;
 
     /**
@@ -39,7 +40,9 @@ class LeaveRecordServiceTest extends TestCase
 
     /**
      * Test creating a new leave record
+     *
      * @return void
+     *
      * @throws Exception
      */
     public function testAddLeaveRecord()
@@ -66,6 +69,7 @@ class LeaveRecordServiceTest extends TestCase
 
     /**
      * Test that specifying an end date before the start date throws an exception
+     *
      * @throws Exception
      */
     public function testAddLeaveRecordEndDateBeforeStartDateThrowsException()
@@ -85,6 +89,7 @@ class LeaveRecordServiceTest extends TestCase
 
     /**
      * Test deleting a leave record
+     *
      * @return void
      */
     public function testDeleteLeaveRecord()
@@ -101,6 +106,4 @@ class LeaveRecordServiceTest extends TestCase
         $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
         $leaveRecordService->deleteLeaveRecord($leaveRecordId);
     }
-
-
 }

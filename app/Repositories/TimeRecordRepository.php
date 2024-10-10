@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\TimeRecord;
 use App\Contracts\TimeRecordRepositoryInterface;
+use App\Models\TimeRecord;
 use Illuminate\Support\Collection;
 
 /**
@@ -33,4 +33,3 @@ class TimeRecordRepository implements TimeRecordRepositoryInterface
         return TimeRecord::where('user_id', $userId)->get();
     }
 }
-

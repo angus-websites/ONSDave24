@@ -13,5 +13,5 @@ interface LeaveRecordRepositoryInterface
 
     public function deleteLeaveRecord(int $leaveRecordId);
 
-    public function getAllLeaveRecordsForUser(int $userId) : iterable;
+    public function getAllLeaveRecordsForUser(int $userId): iterable;
 }

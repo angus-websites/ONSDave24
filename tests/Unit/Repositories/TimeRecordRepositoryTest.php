@@ -19,7 +19,7 @@ class TimeRecordRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->timeRecordRepository = new TimeRecordRepository();
+        $this->timeRecordRepository = new TimeRecordRepository;
     }
 
     public function testCreateTimeRecord()
@@ -67,5 +67,4 @@ class TimeRecordRepositoryTest extends TestCase
 
         $this->assertCount(3, $records);
     }
-
 }

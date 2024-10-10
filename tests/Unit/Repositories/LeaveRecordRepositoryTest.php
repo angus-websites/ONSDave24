@@ -18,11 +18,12 @@ class LeaveRecordRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->leaveRecordRepository = new LeaveRecordRepository();
+        $this->leaveRecordRepository = new LeaveRecordRepository;
     }
 
     /**
      * Test creating a new leave record
+     *
      * @return void
      */
     public function testCreateLeaveRecord()
@@ -46,6 +47,7 @@ class LeaveRecordRepositoryTest extends TestCase
 
     /**
      * Test deleting a leave record
+     *
      * @return void
      */
     public function testDeleteLeaveRecord()
@@ -69,6 +71,7 @@ class LeaveRecordRepositoryTest extends TestCase
 
     /**
      * Test getting all leave records for a user
+     *
      * @return void
      */
     public function testGetAllLeaveRecordsForUser()
@@ -95,6 +98,4 @@ class LeaveRecordRepositoryTest extends TestCase
         $this->assertEquals($leaveRecordsData[1]['end_date'], $leaveRecords[1]->end_date);
         $this->assertEquals($leaveRecordsData[1]['leave_type'], $leaveRecords[1]->leave_type);
     }
-
-
 }

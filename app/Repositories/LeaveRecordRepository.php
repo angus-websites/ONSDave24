@@ -14,7 +14,7 @@ class LeaveRecordRepository implements LeaveRecordRepositoryInterface
 {
     /**
      * Create a new leave record
-     * @param array $data
+     *
      * @return mixed
      */
     public function createLeaveRecord(array $data)
@@ -24,8 +24,6 @@ class LeaveRecordRepository implements LeaveRecordRepositoryInterface
 
     /**
      * Delete a leave record by its ID
-     * @param int $leaveRecordId
-     * @return int
      */
     public function deleteLeaveRecord(int $leaveRecordId): int
     {
@@ -34,12 +32,9 @@ class LeaveRecordRepository implements LeaveRecordRepositoryInterface
 
     /**
      * Get all leave records for a user
-     * @param int $userId
-     * @return Collection
      */
     public function getAllLeaveRecordsForUser(int $userId): Collection
     {
         return LeaveRecord::where('user_id', $userId)->get();
     }
 }
-

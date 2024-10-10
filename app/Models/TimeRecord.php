@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class TimeRecord extends Model
 {
     use HasFactory;
-    static int $minimumSessionSeconds = 30;
+
+    public static int $minimumSessionSeconds = 30;
 
     protected $fillable = [
         'user_id', 'recorded_at', 'type', 'notes',
