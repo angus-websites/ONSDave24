@@ -10,12 +10,10 @@ use App\Services\TimeRecordService;
 use Carbon\Carbon;
 use Database\Factories\UserFactory;
 use Exception;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TimeRecordServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected TimeRecordRepositoryInterface $timeRecordRepository;
     protected User $user;

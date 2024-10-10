@@ -3,13 +3,9 @@
 namespace Tests\Unit\Repositories;
 
 use App\Contracts\LeaveRecordRepositoryInterface;
-use App\Contracts\TimeRecordRepositoryInterface;
 use App\Enums\LeaveRecordType;
-use App\Enums\TimeRecordType;
-use App\Models\TimeRecord;
 use App\Models\User;
 use App\Repositories\LeaveRecordRepository;
-use App\Repositories\TimeRecordRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
