@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\TimeRecordType;
 use App\Models\TimeRecord;
 use App\Models\User;
-use App\Enums\TimeRecordType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
