@@ -33,40 +33,38 @@ class TimeRecordService
      */
     public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null): void
     {
-        // If userProvidedTime is not provided, use the current time
-        if ($userProvidedTime === null) {
-            $userProvidedTime = Carbon::now();
-        }
+        // Use the current time if the user didn't provide one, and convert it to UTC
+        $userProvidedTime = $this->convertToUtc($userProvidedTime ?? Carbon::now(), $userLocation);
 
-        // If the userProvidedTime is passed, convert it to UTC
-        if ($userProvidedTime !== null) {
-            $userProvidedTime = $this->convertToUtc($userProvidedTime, $userLocation);
-        }
-
-        // Call clockIn or clockOut based on the user's last time record
+        // Get the user's last time record
         $lastTimeRecord = $this->timeRecordRepository->getLastRecordForUser($userId);
 
-        // If userProvidedTime is provided, it must be after the last time record
-        if ($lastTimeRecord !== null && $userProvidedTime !== null && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
+        // Check if the provided time is before the last time record
+        if ($lastTimeRecord && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
             throw new Exception("User provided time must be after the last time record");
         }
 
-        // If userProvidedTime is provided, use isSessionDurationTooShort to check if the session is too short
-        if ($lastTimeRecord !== null && $userProvidedTime !== null && $this->isSessionDurationTooShort($lastTimeRecord->recorded_at, $userProvidedTime)) {
-            // Remove the last time record
+        // If the session duration is too short, remove the last time record and return
+        if ($lastTimeRecord && $this->isSessionDurationTooShort($lastTimeRecord->recorded_at, $userProvidedTime)) {
             $this->timeRecordRepository->removeLastRecordForUser($userId);
             return;
         }
 
-        // If the last time record is clock out or null, clock in the user
-        if ($lastTimeRecord === null || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {
+        // Determine whether to clock in or out
+        $this->clockInOrOut($userId, $lastTimeRecord, $userProvidedTime);
+    }
+
+    private function clockInOrOut(int $userId, ?TimeRecord $lastTimeRecord, Carbon $userProvidedTime): void
+    {
+        if (!$lastTimeRecord || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {
+            // If there's no record or the last record is clock out, clock in
             $this->clockIn($userId, $userProvidedTime);
         } else {
-            // If the last time record is clock in, clock out the user
+            // Otherwise, clock out
             $this->clockOut($userId, $userProvidedTime);
         }
-
     }
+
 
     /**
      * Clock in the user.

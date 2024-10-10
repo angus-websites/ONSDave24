@@ -185,11 +185,13 @@ class TimeRecordServiceTest extends TestCase
 
         // Create a mock TimeRecord object with the type of TimeRecordType::CLOCK_IN
         // This will be used to mock the last record for the user
-        $clock__in_mock = $this->createMock(TimeRecord::class);
-        $clock__in_mock->type = TimeRecordType::CLOCK_IN;
+        $clock_in_mock = TimeRecord::make([
+            'recorded_at' => $start,
+            'type' => TimeRecordType::CLOCK_IN,
+        ]);
 
         // Mock the getLastRecordForUser method to return the mock TimeRecord object
-        $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock__in_mock);
+        $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock_in_mock);
 
         // Call the handleClock method to clock out
         $timeRecordService->handleClock($this->user->id, 'Europe/London');
