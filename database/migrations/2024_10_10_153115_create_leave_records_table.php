@@ -19,9 +19,9 @@ return new class extends Migration
                 ->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->enum('type', LeaveRecordType::getValues())->default(LeaveRecordType::ANNUAL->value);
-            $table->dateTime('start');
-            $table->dateTime('end');
+            $table->enum('leave_type', LeaveRecordType::getValues())->default(LeaveRecordType::ANNUAL->value);
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->text('notes')->nullable();
             $table->timestamps();
         });
