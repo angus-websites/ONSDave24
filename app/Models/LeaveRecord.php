@@ -21,4 +21,10 @@ class LeaveRecord extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+
