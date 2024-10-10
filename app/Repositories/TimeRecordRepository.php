@@ -22,6 +22,12 @@ class TimeRecordRepository implements TimeRecordRepositoryInterface
         return TimeRecord::where('user_id', $userId)->latest()->first();
     }
 
+    public function removeLastRecordForUser(int $userId): void
+    {
+        $lastRecord = $this->getLastRecordForUser($userId);
+        $lastRecord?->delete();
+    }
+
     public function getAllRecordsForUser(int $userId): Collection
     {
         return TimeRecord::where('user_id', $userId)->get();
