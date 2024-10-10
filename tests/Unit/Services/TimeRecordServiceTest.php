@@ -257,17 +257,23 @@ class TimeRecordServiceTest extends TestCase
         $start = Carbon::parse('2024-01-01 09:00:00', 'Europe/London');
         $end = Carbon::parse('2024-01-01 9:00:15', 'Europe/London');
 
-        // Define the expected calls to the mock repository, this should be called only once, for clock in
-        $matcher = $this->exactly(1);
-        $this->timeRecordRepository->expects($matcher)
+        // Define the expected calls to the mock repository
+        // The first call should be to createTimeRecord to clock
+        // The second call should be to removeLastRecordForUser to delete the last record
+        // Expect `createTimeRecord` to be called once for clocking in
+        $this->timeRecordRepository->expects($this->once())
             ->method('createTimeRecord')
-            ->willReturnCallback(function ($data) use ($start, $matcher) {
+            ->with($this->callback(function ($data) use ($start) {
+                return $data['user_id'] === $this->user->id
+                    && $data['recorded_at'] instanceof Carbon
+                    && $data['recorded_at']->eq($start)
+                    && $data['type'] === TimeRecordType::CLOCK_IN;
+            }));
 
-                // Match parameters based on the invocation count
-                match ($matcher->numberOfInvocations()) {
-                    1 => $this->assertTimeRecord($data, $this->user->id, $start, TimeRecordType::CLOCK_IN),
-                };
-            });
+        // Expect `removeLastRecordForUser` to be called once for removing the last record
+        $this->timeRecordRepository->expects($this->once())
+            ->method('removeLastRecordForUser')
+            ->with($this->user->id);
 
         // Create a new instance of TimeRecordService
         $timeRecordService = new TimeRecordService($this->timeRecordRepository);
