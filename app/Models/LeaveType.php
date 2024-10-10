@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeaveType extends Model
 {
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['code', 'name', 'description', 'paid'];
+
+    public function leaveRecords()
+    {
+        return $this->hasMany(LeaveRecord::class);
+    }
+
 }

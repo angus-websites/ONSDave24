@@ -19,7 +19,11 @@ return new class extends Migration
                 ->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->enum('leave_type', LeaveRecordType::getValues())->default(LeaveRecordType::ANNUAL->value);
+            $table->foreignId('leave_type_id')
+                ->references('id')
+                ->on('leave_types')
+                ->onUpdate('cascade')
+                ->onDelete('restrict'); // Restrict deletion if there are leave records using this type
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->text('notes')->nullable();

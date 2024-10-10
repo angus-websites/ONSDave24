@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('leave_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('code')->unique();
+            $table->string('name')->unique();
             $table->string('description')->nullable();
+            $table->boolean('paid')->default(true); // Is this leave type paid?
+            $table->boolean('core')->default(false); // Is this a core leave type?
             $table->timestamps();
         });
     }
