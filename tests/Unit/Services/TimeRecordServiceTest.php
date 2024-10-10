@@ -143,8 +143,8 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test a new user clocking in, then clocking out in the UK without providing a time
-     * @throws \Exception
-     * @throws Exception
+     * @throws \Exception|Exception
+     *
      */
     public function testHandleClockUkNewUserTwiceNow()
     {
@@ -155,7 +155,6 @@ class TimeRecordServiceTest extends TestCase
 
         // Define the expected calls to the mock repository, this should be called twice
         // The first call should be for clock in and the second call should be for clock out
-        // Define the expectation for the mock repository
         $matcher = $this->exactly(2);
         $this->timeRecordRepository->expects($matcher)
             ->method('createTimeRecord')
@@ -182,6 +181,7 @@ class TimeRecordServiceTest extends TestCase
         Carbon::setTestNow($end);
 
         // Create a mock TimeRecord object with the type of TimeRecordType::CLOCK_IN
+        // This will be used to mock the last record for the user
         $clock__in_mock = $this->createMock(TimeRecord::class);
         $clock__in_mock->type = TimeRecordType::CLOCK_IN;
 
@@ -190,6 +190,53 @@ class TimeRecordServiceTest extends TestCase
 
         // Call the handleClock method to clock out
         $timeRecordService->handleClock($this->user->id, 'Europe/London');
+    }
+
+    /**
+     * Test a new user clocking in automatically clocking out manually with a time that is before the clock in time
+     * @throws \Exception|Exception
+     */
+    public function testHandleClockUkNewUserClockOutBeforeClockIn()
+    {
+        // Mock the current time for clock in (start of the day in the UK timezone)
+        $start = Carbon::parse('2024-01-01 09:00:00', 'Europe/London');
+        $end = Carbon::parse('2024-01-01 08:00:00', 'Europe/London');
+
+        // Define the expected calls to the mock repository, this should be called only once, for clock in
+        $matcher = $this->exactly(1);
+        $this->timeRecordRepository->expects($matcher)
+            ->method('createTimeRecord')
+            ->willReturnCallback(function ($data) use ($start, $end, $matcher) {
+
+                // Match parameters based on the invocation count
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertTimeRecord($data, $this->user->id, $start, TimeRecordType::CLOCK_IN),
+                };
+            });
+
+        // Create a new instance of TimeRecordService
+        $timeRecordService = new TimeRecordService($this->timeRecordRepository);
+
+        // Set the current time to the start of the day
+        Carbon::setTestNow($start);
+
+        // Call the handleClock method to clock in
+        $timeRecordService->handleClock($this->user->id, 'Europe/London');
+
+
+        // Create a mock TimeRecord object with the type of TimeRecordType::CLOCK_IN
+        // This will be used to mock the last record for the user
+        $clock__in_mock = $this->createMock(TimeRecord::class);
+        $clock__in_mock->type = TimeRecordType::CLOCK_IN;
+
+        // Mock the getLastRecordForUser method to return the mock TimeRecord object
+        $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock__in_mock);
+
+        // Call the handleClock method to clock out but manually provide a time that is before the clock in time
+        $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
+
+        // Assert an exception is thrown
+        $this->expectException(Exception::class);
     }
 
 
