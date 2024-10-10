@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\TimeRecordRepositoryInterface;
 use App\Enums\TimeRecordType;
+use App\Models\TimeRecord;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
@@ -48,6 +49,13 @@ class TimeRecordService
         // If userProvidedTime is provided, it must be after the last time record
         if ($lastTimeRecord !== null && $userProvidedTime !== null && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
             throw new Exception("User provided time must be after the last time record");
+        }
+
+        // If userProvidedTime is provided, use isSessionDurationTooShort to check if the session is too short
+        if ($lastTimeRecord !== null && $userProvidedTime !== null && $this->isSessionDurationTooShort($lastTimeRecord->recorded_at, $userProvidedTime)) {
+            // Remove the last time record
+            $this->timeRecordRepository->removeLastRecordForUser($userId);
+            return;
         }
 
         // If the last time record is clock out or null, clock in the user
@@ -105,7 +113,7 @@ class TimeRecordService
      */
     private function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
     {
-        return $clockInTime->diffInSeconds($clockOutTime) < 10;
+        return $clockInTime->diffInSeconds($clockOutTime) < TimeRecord::$minimumSessionSeconds;
     }
 
     /**
