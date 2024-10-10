@@ -250,6 +250,7 @@ class TimeRecordServiceTest extends TestCase
     /**
      * Test that when a clock out is called within the minimum session duration, the last record is deleted and the
      * session is not created
+     * @throws Exception
      */
     public function testHandleClockUkNewUserClockOutWithinMinimumSession()
     {
@@ -295,9 +296,6 @@ class TimeRecordServiceTest extends TestCase
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
 
     }
-
-
-
 
 
 }

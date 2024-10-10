@@ -38,6 +38,16 @@ class TimeRecordRepositoryTest extends TestCase
         $this->assertInstanceOf(TimeRecord::class, $timeRecord);
     }
 
+    public function testGetLastRecordForUser()
+    {
+        $user = User::factory()->create();
+        $timeRecord = TimeRecord::factory()->create(['user_id' => $user->id]);
+
+        $lastRecord = $this->timeRecordRepository->getLastRecordForUser($user->id);
+
+        $this->assertEquals($timeRecord->id, $lastRecord->id);
+    }
+
     public function testRemoveLastRecordForUser()
     {
         $user = User::factory()->create();
@@ -46,6 +56,16 @@ class TimeRecordRepositoryTest extends TestCase
         $this->timeRecordRepository->removeLastRecordForUser($user->id);
 
         $this->assertDatabaseMissing('time_records', ['id' => $timeRecord->id]);
+    }
+
+    public function testGetAllRecordsForUser()
+    {
+        $user = User::factory()->create();
+        $timeRecords = TimeRecord::factory()->count(3)->create(['user_id' => $user->id]);
+
+        $records = $this->timeRecordRepository->getAllRecordsForUser($user->id);
+
+        $this->assertCount(3, $records);
     }
 
 }
