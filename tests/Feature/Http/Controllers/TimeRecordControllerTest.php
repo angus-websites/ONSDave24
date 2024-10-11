@@ -119,7 +119,7 @@ class TimeRecordControllerTest extends TestCase
 
     /**
      * Test calling the clock endpoint a second time with a provided
-     * time that is before the last time record returns a 400 response
+     * time that is before the last time record returns a 422 response
      */
     public function testHandleClockThrowsExceptionIfProvidedTimeIsBeforeLastRecord()
     {
@@ -155,7 +155,7 @@ class TimeRecordControllerTest extends TestCase
         ]);
 
         // Assert the response status code is not 200
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     /**

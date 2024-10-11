@@ -4,6 +4,8 @@ namespace Tests\Unit\Services;
 
 use App\Contracts\TimeRecordRepositoryInterface;
 use App\Enums\TimeRecordType;
+use App\Exceptions\InvalidTimeProvidedException;
+use App\Exceptions\ShortSessionDurationException;
 use App\Models\TimeRecord;
 use App\Models\User;
 use App\Services\TimeRecordService;
@@ -233,7 +235,7 @@ class TimeRecordServiceTest extends TestCase
         $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock_in_mock);
 
         // Assert an exception is thrown
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidTimeProvidedException::class);
 
         // Call the handleClock method to clock out but manually provide a time that is before the clock in time
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
@@ -285,6 +287,9 @@ class TimeRecordServiceTest extends TestCase
 
         // Mock the getLastRecordForUser method to return the mock TimeRecord object
         $this->timeRecordRepository->method('getLastRecordForUser')->willReturn($clock_in_mock);
+
+        // Assert the ShortSessionDurationException is thrown
+        $this->expectException(ShortSessionDurationException::class);
 
         // Call the handleClock method to clock out
         $timeRecordService->handleClock($this->user->id, 'Europe/London', $end);
