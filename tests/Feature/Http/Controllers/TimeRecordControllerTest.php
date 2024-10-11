@@ -119,7 +119,7 @@ class TimeRecordControllerTest extends TestCase
 
     /**
      * Test calling the clock endpoint a second time with a provided
-     * time that is before the last time record throws an exception
+     * time that is before the last time record returns a 400 response
      */
     public function testHandleClockThrowsExceptionIfProvidedTimeIsBeforeLastRecord()
     {
@@ -157,4 +157,39 @@ class TimeRecordControllerTest extends TestCase
         // Assert the response status code is not 200
         $response->assertStatus(400);
     }
+
+    /**
+     * Test that calling the endpoint within the minimum session duration deletes the session
+     */
+    public function testHandleClockDeletesSessionIfWithinMinimumSessionDuration()
+    {
+        // Mock the current time
+        $now = Carbon::parse('2024-01-01 10:00:00');
+        Carbon::setTestNow($now);
+
+        // Create a user
+        $user = User::factory()->create();
+
+        // Create a clock in record for the user
+        $this->actingAs($user);
+        $this->post('/clock');
+
+        // Assert the user has a time record
+        $this->assertDatabaseHas('time_records', [
+            'user_id' => $user->id,
+            'recorded_at' => '2024-01-01 10:00:00',
+            'type' => 'clock_in',
+        ]);
+
+        // Mock the current time to be 20 seconds after the clock in time
+        $now = Carbon::parse('2024-01-01 10:00:20');
+        Carbon::setTestNow($now);
+
+        // Call the clock endpoint
+        $this->post('/clock');
+
+        // Assert the user has no time records
+        $this->assertDatabaseCount('time_records', 0);
+    }
 }
+
