@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidTimeProvidedException;
 use App\Exceptions\ShortSessionDurationException;
+use App\Rules\ValidTimezone;
 use App\Services\TimeRecordService;
+use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -25,20 +27,33 @@ class TimeRecordController extends Controller
      */
     public function handleClock(Request $request)
     {
+
+        // Validate the request inputs
+        $validated = $request->validate([
+            'time' => 'nullable|date',
+            'location' => ['nullable', 'string', 'max:255', new ValidTimezone],
+        ]);
+
         // Get the authenticated user ID
         $userId = Auth::id();
 
         // Extract inputs with defaults and type casting
-        $time = $request->input('time') ? new Carbon($request->input('time')) : null;
-        $location = $request->input('location', 'Europe/London');
+        $time = isset($validated['time']) ? new Carbon($validated['time']) : null;
+        $location = $validated['location'] ?? 'Europe/London';
 
         // Catch and handle service exceptions
         try {
             $this->timeRecordService->handleClock($userId, $location, $time);
-        } catch (InvalidTimeProvidedException|ShortSessionDurationException $e) {
-            return response()->json(['message' => $e->getMessage()], 422); // Unprocessable Entity
-        } catch (Exception $e) {
-            return response()->json(['message' => 'An unexpected error occurred'], 500); // General fallback
+        }
+        catch (InvalidTimeProvidedException$e) {
+            throw ValidationException::withMessages([
+                'time' => "The time provided is before the last clock in/out time",
+            ]);
+        }
+        catch (ShortSessionDurationException $e) {
+            throw ValidationException::withMessages([
+                'time' => "The session duration was too short, it was deleted",
+            ]);
         }
 
         // Return a success response

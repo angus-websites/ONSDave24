@@ -84,5 +84,7 @@ class LeaveRecordControllerTest extends TestCase
         $response->assertSessionHasErrors('end_date');
     }
 
+
+
 }
 

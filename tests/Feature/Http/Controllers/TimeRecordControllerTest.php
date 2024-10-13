@@ -36,8 +36,6 @@ class TimeRecordControllerTest extends TestCase
         // Simulate a POST request to the controller
         $response = $this->post('/clock');
 
-        $response->dump();
-
         // Check if the user has a time record
         $this->assertDatabaseHas('time_records', [
             'user_id' => $user->id,
@@ -121,7 +119,7 @@ class TimeRecordControllerTest extends TestCase
      * Test calling the clock endpoint a second time with a provided
      * time that is before the last time record returns a 422 response
      */
-    public function testHandleClockThrowsExceptionIfProvidedTimeIsBeforeLastRecord()
+    public function testHandleClockThrowsErrorIfProvidedTimeIsBeforeLastRecord()
     {
         // Mock the current time
         $now = Carbon::parse('2024-01-01 10:00:00');
@@ -155,7 +153,7 @@ class TimeRecordControllerTest extends TestCase
         ]);
 
         // Assert the response status code is not 200
-        $response->assertStatus(422);
+        $response->assertSessionHasErrors('time');
     }
 
     /**
@@ -191,5 +189,24 @@ class TimeRecordControllerTest extends TestCase
         // Assert the user has no time records
         $this->assertDatabaseCount('time_records', 0);
     }
+
+    /**
+     * Test that when an invalid time zone is provided an error message is returned
+     */
+    public function testHandleClockWithInvalidTimeZoneThrowsError()
+    {
+        // Create a user
+        $user = User::factory()->create();
+
+        // Call the clock endpoint
+        $this->actingAs($user);
+
+        // Simulate a POST request to the controller with an invalid time zone
+        $response = $this->post('/clock', ['location' => 'Invalid/Timezone']);
+
+        // Assert the response has the expected error message
+        $response->assertSessionHasErrors('location');
+    }
+
 }
 

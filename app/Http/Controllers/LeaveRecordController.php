@@ -24,10 +24,11 @@ class LeaveRecordController extends Controller
     public function addLeave(Request $request)
     {
 
+        // Validate the request inputs
         $validated = $request->validate([
             'leave_type_id' => 'required|exists:leave_types,id',
-            'start_date' => 'required|date|before:end_date',
-            'end_date' => 'required|date|after:start_date',
+            'start_date' => 'required|date|before_or_equal:end_date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'notes' => 'nullable|string|max:255',
         ]);
 
@@ -40,7 +41,8 @@ class LeaveRecordController extends Controller
 
         // Use the service to add the leave record
         $this->leaveRecordService->addLeaveRecord($userId, $validated['leave_type_id'], $startDate, $endDate, $validated['notes']);
-    }
 
+
+    }
 
 }

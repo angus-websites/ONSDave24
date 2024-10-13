@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Contracts\LeaveRecordRepositoryInterface;
+use App\Exceptions\InvalidLeaveDateProvidedException;
+use App\Exceptions\ShortLeaveDurationException;
+use App\Models\LeaveRecord;
 use Carbon\Carbon;
 use Exception;
 
@@ -20,12 +23,17 @@ class LeaveRecordService
      *
      * @throws Exception
      */
-    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate, string $notes): void
+    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate, string $notes = null): void
     {
 
         // Validate that end date is after start date
         if ($endDate->lt($startDate)) {
-            throw new Exception('End date must be after start date');
+            throw new InvalidLeaveDateProvidedException();
+        }
+
+        // Validate the duration of the leave is greater than the minimum
+        if ($startDate->diffInDays($endDate) < LeaveRecord::$minimumLeaveDuration) {
+            throw new ShortLeaveDurationException();
         }
 
         $this->leaveRecordRepository->createLeaveRecord(
