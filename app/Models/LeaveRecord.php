@@ -11,6 +11,8 @@ class LeaveRecord extends Model
     /** @use HasFactory<LeaveRecordFactory> */
     use HasFactory;
 
+    public static float $minimumLeaveDuration = 0.5; // Half a day
+
     protected $fillable = [
         'user_id', 'start_date', 'end_date', 'leave_type_id', 'notes',
     ];

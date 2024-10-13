@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Contracts\TimeRecordRepositoryInterface;
 use App\Enums\TimeRecordType;
+use App\Exceptions\InvalidTimeProvidedException;
+use App\Exceptions\ShortSessionDurationException;
 use App\Models\TimeRecord;
 use Carbon\Carbon;
 use DateTime;
@@ -38,14 +40,13 @@ class TimeRecordService
 
         // Check if the provided time is before the last time record
         if ($lastTimeRecord && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
-            throw new Exception('User provided time must be after the last time record');
+            throw new InvalidTimeProvidedException();
         }
 
         // If the session duration is too short, remove the last time record and return
         if ($lastTimeRecord && $this->isSessionDurationTooShort($lastTimeRecord->recorded_at, $userProvidedTime)) {
             $this->timeRecordRepository->removeLastRecordForUser($userId);
-
-            return;
+            throw new ShortSessionDurationException();
         }
 
         // Determine whether to clock in or out

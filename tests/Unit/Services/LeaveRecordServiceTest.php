@@ -3,6 +3,8 @@
 namespace Tests\Unit\Services;
 
 use App\Contracts\LeaveRecordRepositoryInterface;
+use App\Exceptions\InvalidLeaveDateProvidedException;
+use App\Exceptions\ShortLeaveDurationException;
 use App\Models\LeaveType;
 use App\Models\User;
 use App\Services\LeaveRecordService;
@@ -62,6 +64,7 @@ class LeaveRecordServiceTest extends TestCase
                 'leave_type_id' => $leaveTypeId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'notes' => null,
             ]);
 
         // Call the service method
@@ -85,7 +88,7 @@ class LeaveRecordServiceTest extends TestCase
         $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
 
         // 3. Expect an exception to be thrown
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidLeaveDateProvidedException::class);
         $leaveRecordService->addLeaveRecord($this->user->id, $leaveTypeId, $startDate, $endDate);
     }
 
@@ -107,5 +110,25 @@ class LeaveRecordServiceTest extends TestCase
         // Call the service method
         $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
         $leaveRecordService->deleteLeaveRecord($leaveRecordId);
+    }
+
+    /**
+     * Test that adding leave shorter than the minimum duration throws an exception
+     * @throws Exception
+     */
+    public function testAddLeaveRecordShorterThanMinimumDurationThrowsException()
+    {
+        // Set up the data for the test
+        $leaveTypeId = $this->leaveType->id;
+        $startDate = Carbon::parse('2024-01-01 09:00:00');
+        $endDate = Carbon::parse('2024-01-01 10:00:00');
+
+        // Call the service method
+        $leaveRecordService = new LeaveRecordService($this->leaveRecordRepository);
+
+        // 3. Expect an exception to be thrown
+        $this->expectException(ShortLeaveDurationException::class);
+
+        $leaveRecordService->addLeaveRecord($this->user->id, $leaveTypeId, $startDate, $endDate);
     }
 }
