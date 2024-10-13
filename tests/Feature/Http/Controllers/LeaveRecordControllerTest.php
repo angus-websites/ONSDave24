@@ -84,6 +84,35 @@ class LeaveRecordControllerTest extends TestCase
         $response->assertSessionHasErrors('end_date');
     }
 
+    /**
+     * Test that adding leave shorter than the minimum duration throws an exception
+     */
+    public function testAddLeaveWithShortDuration()
+    {
+        // 1. Create a user
+        $user = User::factory()->create();
+
+        // 2. Create a leave type
+        $leaveType = LeaveType::factory()->create();
+
+        // 3. Create a request with the required data
+        $request = [
+            'leave_type_id' => $leaveType->id,
+            'start_date' => Carbon::now()->toDateString(),
+            'end_date' => Carbon::now()->addHours(1)->toDateString(),
+            'notes' => 'Trip to the beach',
+        ];
+
+        // Call the endpoint
+        $this->actingAs($user);
+
+        // Simulate a POST request to the controller
+        $response = $this->post('/leave', $request);
+
+        // Assert the response has the expected error message
+        $response->assertSessionHasErrors('end_date');
+    }
+
 
 
 }

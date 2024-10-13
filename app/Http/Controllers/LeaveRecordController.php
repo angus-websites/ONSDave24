@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ShortLeaveDurationException;
+use App\Models\LeaveRecord;
 use App\Services\LeaveRecordService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LeaveRecordController extends Controller
 {
@@ -40,7 +43,15 @@ class LeaveRecordController extends Controller
         $endDate = Carbon::parse($validated['end_date']);
 
         // Use the service to add the leave record
-        $this->leaveRecordService->addLeaveRecord($userId, $validated['leave_type_id'], $startDate, $endDate, $validated['notes']);
+        try {
+            $this->leaveRecordService->addLeaveRecord($userId, $validated['leave_type_id'], $startDate, $endDate, $validated['notes']);
+        }
+        catch (ShortLeaveDurationException $e) {
+            $minDuration = LeaveRecord::$minimumLeaveDuration;
+            throw ValidationException::withMessages([
+                'end_date' => "The leave duration must be at least $minDuration days",
+            ]);
+        }
 
 
     }
