@@ -15,7 +15,7 @@ class LeaveRecordController extends Controller
 
     public function __construct(LeaveRecordService $leaveRecordService)
     {
-        $this->$leaveRecordService = $leaveRecordService;
+        $this->leaveRecordService = $leaveRecordService;
     }
 
     /**
@@ -26,7 +26,21 @@ class LeaveRecordController extends Controller
         // Get the authenticated user ID
         $userId = Auth::id();
 
-        
+        // Fetch the parameters from the request
+        $leaveTypeId = $request->input('leave_type_id');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $notes = $request->input('notes');
+
+        // Convert the date strings to Carbon objects
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+
+        // Use the service to add the leave record
+        $this->leaveRecordService->addLeaveRecord($userId, $leaveTypeId, $startDate, $endDate, $notes);
+
+
+
     }
 
 }

@@ -20,7 +20,7 @@ class LeaveRecordService
      *
      * @throws Exception
      */
-    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate): void
+    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate, string $notes): void
     {
 
         // Validate that end date is after start date
@@ -34,6 +34,7 @@ class LeaveRecordService
                 'leave_type_id' => $leaveTypeId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'notes' => $notes,
             ]
         );
     }
