@@ -23,24 +23,24 @@ class LeaveRecordController extends Controller
      */
     public function addLeave(Request $request)
     {
+
+        $validated = $request->validate([
+            'leave_type_id' => 'required|exists:leave_types,id',
+            'start_date' => 'required|date|before:end_date',
+            'end_date' => 'required|date|after:start_date',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
         // Get the authenticated user ID
         $userId = Auth::id();
 
-        // Fetch the parameters from the request
-        $leaveTypeId = $request->input('leave_type_id');
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        $notes = $request->input('notes');
-
         // Convert the date strings to Carbon objects
-        $startDate = Carbon::parse($startDate);
-        $endDate = Carbon::parse($endDate);
+        $startDate = Carbon::parse($validated['start_date']);
+        $endDate = Carbon::parse($validated['end_date']);
 
         // Use the service to add the leave record
-        $this->leaveRecordService->addLeaveRecord($userId, $leaveTypeId, $startDate, $endDate, $notes);
-
-
-
+        $this->leaveRecordService->addLeaveRecord($userId, $validated['leave_type_id'], $startDate, $endDate, $validated['notes']);
     }
+
 
 }
