@@ -298,6 +298,7 @@ class TimeRecordServiceTest extends TestCase
 
     /**
      * Test clock with different time zones, test that when a user clocks in and out in different time zones,
+     *
      * @throws Exception
      */
     public function testHandleClockDifferentTimeZones()
@@ -309,7 +310,6 @@ class TimeRecordServiceTest extends TestCase
         // Clock out at 5pm in France
         $end = Carbon::parse('2024-01-01 17:00:00', 'Europe/Paris');
         $expectedEnd = Carbon::parse('2024-01-01 16:00:00', 'UTC');
-
 
         // Define the expected calls to the mock repository
         // The first call should be to createTimeRecord to clock in

@@ -2,8 +2,8 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
 use DateTimeZone;
+use Illuminate\Contracts\Validation\Rule;
 
 class ValidTimezone implements Rule
 {

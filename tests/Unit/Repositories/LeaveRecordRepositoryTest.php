@@ -14,7 +14,9 @@ class LeaveRecordRepositoryTest extends TestCase
     use RefreshDatabase;
 
     protected LeaveRecordRepositoryInterface $leaveRecordRepository;
+
     protected User $user;
+
     protected LeaveType $leaveType;
 
     protected function setUp(): void

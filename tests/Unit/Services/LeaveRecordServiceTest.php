@@ -19,6 +19,7 @@ class LeaveRecordServiceTest extends TestCase
     protected LeaveRecordRepositoryInterface $timeRecordRepository;
 
     protected User $user;
+
     protected LeaveType $leaveType;
 
     /**
@@ -114,6 +115,7 @@ class LeaveRecordServiceTest extends TestCase
 
     /**
      * Test that adding leave shorter than the minimum duration throws an exception
+     *
      * @throws Exception
      */
     public function testAddLeaveRecordShorterThanMinimumDurationThrowsException()

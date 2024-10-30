@@ -6,15 +6,14 @@ use App\Exceptions\InvalidTimeProvidedException;
 use App\Exceptions\ShortSessionDurationException;
 use App\Rules\ValidTimezone;
 use App\Services\TimeRecordService;
-use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class TimeRecordController extends Controller
 {
-
     public TimeRecordService $timeRecordService;
 
     public function __construct(TimeRecordService $timeRecordService)
@@ -44,20 +43,17 @@ class TimeRecordController extends Controller
         // Catch and handle service exceptions
         try {
             $this->timeRecordService->handleClock($userId, $location, $time);
-        }
-        catch (InvalidTimeProvidedException$e) {
+        } catch (InvalidTimeProvidedException$e) {
             throw ValidationException::withMessages([
-                'time' => "The time provided is before the last clock in/out time",
+                'time' => 'The time provided is before the last clock in/out time',
             ]);
-        }
-        catch (ShortSessionDurationException $e) {
+        } catch (ShortSessionDurationException $e) {
             throw ValidationException::withMessages([
-                'time' => "The session duration was too short, it was deleted",
+                'time' => 'The session duration was too short, it was deleted',
             ]);
         }
 
         // Return a success response
         return response()->json(['message' => 'Clock operation successful.'], 200);
     }
-
 }

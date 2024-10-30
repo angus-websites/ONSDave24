@@ -27,10 +27,7 @@ class TimeRecordService
     /**
      * Handle the clock in/out operation for the given user,
      * the userProvidedTime is optional and can be used to override the current time
-     * @param int $userId
-     * @param string $userLocation
-     * @param Carbon|null $userProvidedTime
-     * @return void
+     *
      * @throws Exception
      */
     public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null): void
@@ -43,26 +40,21 @@ class TimeRecordService
 
         // Check if the provided time is before the last time record
         if ($lastTimeRecord && $userProvidedTime->lt($lastTimeRecord->recorded_at)) {
-            throw new InvalidTimeProvidedException();
+            throw new InvalidTimeProvidedException;
         }
 
         // If the session duration is too short, remove the last time record and return
         if ($lastTimeRecord && $this->isSessionDurationTooShort($lastTimeRecord->recorded_at, $userProvidedTime)) {
             $this->timeRecordRepository->removeLastRecordForUser($userId);
-            throw new ShortSessionDurationException();
+            throw new ShortSessionDurationException;
         }
 
         // Determine whether to clock in or out
         $this->clockInOrOut($userId, $lastTimeRecord, $userProvidedTime);
     }
 
-
     /**
      * Determine whether to clock in or out the user.
-     * @param int $userId
-     * @param TimeRecord|null $lastTimeRecord
-     * @param Carbon $userProvidedTime
-     * @return void
      */
     private function clockInOrOut(int $userId, ?TimeRecord $lastTimeRecord, Carbon $userProvidedTime): void
     {
@@ -77,9 +69,6 @@ class TimeRecordService
 
     /**
      * Clock in the user.
-     * @param int $userId
-     * @param Carbon $providedTime
-     * @return void
      */
     private function clockIn(int $userId, Carbon $providedTime): void
     {
@@ -96,9 +85,6 @@ class TimeRecordService
 
     /**
      * Clock out the user.
-     * @param int $userId
-     * @param Carbon $providedTime
-     * @return void
      */
     private function clockOut(int $userId, Carbon $providedTime): void
     {
@@ -114,9 +100,6 @@ class TimeRecordService
 
     /**
      * Check if the user clocks out too soon after clocking in. if so return true.
-     * @param Carbon $clockInTime
-     * @param Carbon $clockOutTime
-     * @return bool
      */
     private function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
     {
@@ -125,9 +108,7 @@ class TimeRecordService
 
     /**
      * Convert the provided clock time to UTC based on the user's time zone.
-     * @param DateTime $clockTime
-     * @param string $userTimeZone
-     * @return Carbon
+     *
      * @throws Exception
      */
     private function convertToUtc(DateTime $clockTime, string $userTimeZone): Carbon

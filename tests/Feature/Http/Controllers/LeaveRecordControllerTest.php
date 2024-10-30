@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Contracts\LeaveRecordRepositoryInterface;
 use App\Models\LeaveType;
 use App\Models\User;
-use App\Repositories\LeaveRecordRepository;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -51,7 +49,6 @@ class LeaveRecordControllerTest extends TestCase
             'end_date' => $request['end_date'],
             'notes' => $request['notes'],
         ]);
-
 
     }
 
@@ -112,8 +109,4 @@ class LeaveRecordControllerTest extends TestCase
         // Assert the response has the expected error message
         $response->assertSessionHasErrors('end_date');
     }
-
-
-
 }
-

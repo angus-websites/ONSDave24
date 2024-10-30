@@ -23,17 +23,17 @@ class LeaveRecordService
      *
      * @throws Exception
      */
-    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate, string $notes = null): void
+    public function addLeaveRecord(int $userId, int $leaveTypeId, Carbon $startDate, Carbon $endDate, ?string $notes = null): void
     {
 
         // Validate that end date is after start date
         if ($endDate->lt($startDate)) {
-            throw new InvalidLeaveDateProvidedException();
+            throw new InvalidLeaveDateProvidedException;
         }
 
         // Validate the duration of the leave is greater than the minimum
         if ($startDate->diffInDays($endDate) < LeaveRecord::$minimumLeaveDuration) {
-            throw new ShortLeaveDurationException();
+            throw new ShortLeaveDurationException;
         }
 
         $this->leaveRecordRepository->createLeaveRecord(

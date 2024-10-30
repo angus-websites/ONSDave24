@@ -13,7 +13,6 @@ use Illuminate\Validation\ValidationException;
 
 class LeaveRecordController extends Controller
 {
-
     public LeaveRecordService $leaveRecordService;
 
     public function __construct(LeaveRecordService $leaveRecordService)
@@ -45,15 +44,12 @@ class LeaveRecordController extends Controller
         // Use the service to add the leave record
         try {
             $this->leaveRecordService->addLeaveRecord($userId, $validated['leave_type_id'], $startDate, $endDate, $validated['notes']);
-        }
-        catch (ShortLeaveDurationException $e) {
+        } catch (ShortLeaveDurationException $e) {
             $minDuration = LeaveRecord::$minimumLeaveDuration;
             throw ValidationException::withMessages([
                 'end_date' => "The leave duration must be at least $minDuration days",
             ]);
         }
 
-
     }
-
 }

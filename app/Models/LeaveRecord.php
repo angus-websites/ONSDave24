@@ -32,4 +32,3 @@ class LeaveRecord extends Model
         return $this->belongsTo(LeaveType::class);
     }
 }
-

@@ -2,10 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Contracts\LeaveRecordRepositoryInterface;
-use App\Models\LeaveType;
 use App\Models\User;
-use App\Repositories\LeaveRecordRepository;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -19,6 +16,7 @@ class TimeRecordControllerTest extends TestCase
     /**
      * Test calling the clock endpoint
      * as a first time user with no arguments
+     *
      * @return void
      */
     public function testHandleClockFirstTimeUser()
@@ -207,6 +205,4 @@ class TimeRecordControllerTest extends TestCase
         // Assert the response has the expected error message
         $response->assertSessionHasErrors('location');
     }
-
 }
-

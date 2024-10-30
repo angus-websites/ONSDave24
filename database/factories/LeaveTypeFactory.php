@@ -19,7 +19,7 @@ class LeaveTypeFactory extends Factory
     {
         // Make code three letters long
         return [
-            'code' =>  $this->faker->unique()->lexify('???'),
+            'code' => $this->faker->unique()->lexify('???'),
             'name' => $this->faker->unique()->word,
             'description' => $this->faker->sentence,
             'paid' => $this->faker->boolean,
