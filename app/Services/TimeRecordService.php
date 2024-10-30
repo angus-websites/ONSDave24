@@ -54,6 +54,13 @@ class TimeRecordService
     }
 
 
+    /**
+     * Determine whether to clock in or out the user.
+     * @param int $userId
+     * @param TimeRecord|null $lastTimeRecord
+     * @param Carbon $userProvidedTime
+     * @return void
+     */
     private function clockInOrOut(int $userId, ?TimeRecord $lastTimeRecord, Carbon $userProvidedTime): void
     {
         if (! $lastTimeRecord || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {
@@ -67,6 +74,9 @@ class TimeRecordService
 
     /**
      * Clock in the user.
+     * @param int $userId
+     * @param Carbon $providedTime
+     * @return void
      */
     private function clockIn(int $userId, Carbon $providedTime): void
     {
@@ -83,6 +93,9 @@ class TimeRecordService
 
     /**
      * Clock out the user.
+     * @param int $userId
+     * @param Carbon $providedTime
+     * @return void
      */
     private function clockOut(int $userId, Carbon $providedTime): void
     {
@@ -98,6 +111,9 @@ class TimeRecordService
 
     /**
      * Check if the user clocks out too soon after clocking in. if so return true.
+     * @param Carbon $clockInTime
+     * @param Carbon $clockOutTime
+     * @return bool
      */
     private function isSessionDurationTooShort(Carbon $clockInTime, Carbon $clockOutTime): bool
     {
@@ -106,7 +122,9 @@ class TimeRecordService
 
     /**
      * Convert the provided clock time to UTC based on the user's time zone.
-     *
+     * @param DateTime $clockTime
+     * @param string $userTimeZone
+     * @return Carbon
      * @throws Exception
      */
     private function convertToUtc(DateTime $clockTime, string $userTimeZone): Carbon
