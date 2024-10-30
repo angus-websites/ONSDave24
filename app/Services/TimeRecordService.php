@@ -53,6 +53,7 @@ class TimeRecordService
         $this->clockInOrOut($userId, $lastTimeRecord, $userProvidedTime);
     }
 
+
     private function clockInOrOut(int $userId, ?TimeRecord $lastTimeRecord, Carbon $userProvidedTime): void
     {
         if (! $lastTimeRecord || $lastTimeRecord->type === TimeRecordType::CLOCK_OUT) {

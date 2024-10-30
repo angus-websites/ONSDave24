@@ -79,8 +79,6 @@ Run Vite
 Visit [Localhost](http://localhost/)
 
 
-New version of ONSDave written in Laravel 11 
-
 ## Setting up PHPStorm php interpreter
 
 1. Go to `Settings` > `PHP` > `Test Frameworks`
