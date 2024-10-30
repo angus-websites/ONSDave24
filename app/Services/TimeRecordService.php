@@ -27,7 +27,10 @@ class TimeRecordService
     /**
      * Handle the clock in/out operation for the given user,
      * the userProvidedTime is optional and can be used to override the current time
-     *
+     * @param int $userId
+     * @param string $userLocation
+     * @param Carbon|null $userProvidedTime
+     * @return void
      * @throws Exception
      */
     public function handleClock(int $userId, string $userLocation, ?Carbon $userProvidedTime = null): void
